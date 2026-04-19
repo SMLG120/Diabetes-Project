@@ -105,15 +105,27 @@ Optional: Optuna hyperparameter tuning (`--tune` flag).
 
 | Model | CV AUC |
 |---|---|
-| Logistic Regression | ~0.8300 |
-| Random Forest | ~0.8600 |
-| LightGBM (default) | ~0.8750 |
-| XGBoost | ~0.8740 |
-| CatBoost | ~0.8760 |
-| LightGBM (Optuna) | ~0.8790 |
-| **Weighted Ensemble** | **~0.8820** |
+| Logistic Regression | ~0.6946 |
+| Random Forest | ~0.6944 |
+| LightGBM (default) | ~0.7275 |
+| XGBoost | ~0.7263 |
+| CatBoost | ~0.7246 |
+| **Weighted Ensemble** | **~0.7725** |
 
-*(Scores are approximate — actual values depend on the Kaggle data download)*
+**LightGBM actual comparison:**
+- CV AUC = `0.7275`
+- LB AUC = `0.8812`
+- Gap = `CV - LB = -0.1537`
+
+### CV AUC vs LB AUC Difference
+- `CV AUC (0.727)` is from local 5-fold cross-validation on training data only. The train set is split into 5 folds, the model is trained on 4/5 and validated on 1/5 repeatedly. This is a conservative estimate of generalization within the train set and is often lower on synthetic data patterns.
+- `LB AUC (0.881)` is the Kaggle leaderboard score on the hidden test set of 300k unseen samples. This is the true performance on withheld data. Here it is higher because the hidden test may match the training distribution especially in synthetic datasets, or because the model generalizes well.
+- `Gap = CV - LB = 0.727 - 0.881 = -0.154` is negative.
+- Overfitting is usually indicated by a positive gap, where CV > LB (for example, CV 0.90 > LB 0.80). That means the model memorized training structure and failed on new data.
+- A negative gap means the leaderboard score is better than local CV. This is not overfitting. It suggests the model performs well on unseen data and that local CV may be conservative.
+- In this Playground challenge, a small absolute gap of about `0.15` is consistent and still indicates robust performance rather than overfit or underfit extremes.
+
+*(These values were verified from `outputs/model_comparison.csv`.)*
 
 ---
 
@@ -162,9 +174,9 @@ python src/evaluation.py
 
 | Member | Role | Deliverables |
 |---|---|---|
-| Member 1 | Data Engineer — EDA & Preprocessing | `eda.py`, `preprocessing.py` |
-| Member 2 | Model Engineer — Training & Tuning | `model_training.py`, `models/` |
-| Member 3 | MLOps — Evaluation & Submission | `evaluation.py`, `report.md`, `submission.csv` |
+| Valencia | Data Engineer — EDA & Preprocessing | `eda.py`, `preprocessing.py` |
+| Samuel | Model Engineer — Training & Tuning | `model_training.py`, `models/` |
+| Tanel | MLOps — Evaluation & Submission | `evaluation.py`, `report.md`, `submission.csv` |
 
 ---
 
