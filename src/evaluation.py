@@ -1,6 +1,6 @@
 """
 =============================================================================
-MEMBER 3 — MLOPS / EVALUATION ENGINEER: evaluation.py
+TANEL — MLOPS / EVALUATION ENGINEER: evaluation.py
 =============================================================================
 Responsibilities:
   - Full pipeline integration
