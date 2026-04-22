@@ -210,4 +210,3 @@ np.random.seed(RANDOM_STATE)
 ---
 
 *Kaggle Playground Series S5E12 — Team Project*
-# Diabetes-Project
