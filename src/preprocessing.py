@@ -97,40 +97,47 @@ def handle_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ── 4. FEATURE ENGINEERING ───────────────────────────────────────────────────
+# ── 4. FEATURE ENGINEERING (corrected for actual dataset) ────────────────────
 
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Create meaningful interaction features for diabetes prediction.
+    Based on actual columns: bmi, age, systolic_bp, diastolic_bp,
+    cholesterol_total, hdl_cholesterol, ldl_cholesterol, etc.
 
     New features:
-      - bmi_age_interaction   : BMI × age  (obesity risk grows with age)
-      - glucose_insulin_ratio : glucose / (insulin + 1)
-      - bp_bmi_ratio          : blood_pressure / (bmi + 1)
-      - high_glucose_flag     : 1 if glucose > 140  (pre-diabetic threshold)
+      - bmi_age_interaction   : BMI × age
+      - bp_cholesterol_ratio  : (systolic_bp + diastolic_bp) / (cholesterol_total + 1)
+      - bp_bmi_ratio          : (systolic_bp + diastolic_bp) / (bmi + 1)
+      - high_bp_flag          : 1 if systolic_bp ≥ 130 or diastolic_bp ≥ 80
       - obese_flag            : 1 if bmi ≥ 30
       - age_group             : bucketed age category
+      - cholesterol_ratio     : total_cholesterol / (hdl_cholesterol + 1)
     """
     df = df.copy()
-
-    # Guard: only create features if source columns exist
     cols = df.columns.tolist()
 
+    # 1. BMI × age
     if "bmi" in cols and "age" in cols:
         df["bmi_age_interaction"] = df["bmi"] * df["age"]
 
-    if "glucose" in cols and "insulin" in cols:
-        df["glucose_insulin_ratio"] = df["glucose"] / (df["insulin"] + 1)
+    # 2. Blood pressure × cholesterol ratio (cardiovascular-metabolic link)
+    if all(c in cols for c in ["systolic_bp", "diastolic_bp", "cholesterol_total"]):
+        df["bp_cholesterol_ratio"] = (df["systolic_bp"] + df["diastolic_bp"]) / (df["cholesterol_total"] + 1)
 
-    if "blood_pressure" in cols and "bmi" in cols:
-        df["bp_bmi_ratio"] = df["blood_pressure"] / (df["bmi"] + 1)
+    # 3. Blood pressure / BMI ratio
+    if all(c in cols for c in ["systolic_bp", "diastolic_bp", "bmi"]):
+        df["bp_bmi_ratio"] = (df["systolic_bp"] + df["diastolic_bp"]) / (df["bmi"] + 1)
 
-    if "glucose" in cols:
-        df["high_glucose_flag"] = (df["glucose"] > 140).astype(int)
+    # 4. High blood pressure flag (hypertension threshold)
+    if all(c in cols for c in ["systolic_bp", "diastolic_bp"]):
+        df["high_bp_flag"] = ((df["systolic_bp"] >= 130) | (df["diastolic_bp"] >= 80)).astype(int)
 
+    # 5. Obese flag
     if "bmi" in cols:
         df["obese_flag"] = (df["bmi"] >= 30).astype(int)
 
+    # 6. Age group (non-linear)
     if "age" in cols:
         df["age_group"] = pd.cut(
             df["age"],
@@ -138,10 +145,13 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
             labels=[0, 1, 2, 3, 4, 5]
         ).astype(int)
 
+    # 7. Cholesterol ratio (total / HDL)
+    if all(c in cols for c in ["cholesterol_total", "hdl_cholesterol"]):
+        df["cholesterol_ratio"] = df["cholesterol_total"] / (df["hdl_cholesterol"] + 1)
+
     print(f"[FeatEng] Dataset now has {df.shape[1]} columns")
     return df
-
-
+  
 # ── 5. CATEGORICAL ENCODING ──────────────────────────────────────────────────
 
 def encode_categoricals(
