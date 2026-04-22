@@ -78,7 +78,7 @@ diabetes_project/
 
 ### 2. Preprocessing (Valencia)
 - Median/mode imputation for missing values
-- Interaction feature engineering (bmi×age, glucose/insulin, etc.)
+- Interaction feature engineering (bmi×age, etc.)
 - StandardScaler (fit on train only — no leakage)
 
 ### 3. Models (Samuel)
