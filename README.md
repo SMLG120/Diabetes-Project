@@ -100,7 +100,7 @@ Optional: Optuna hyperparameter tuning (`--tune` flag).
 - Weighted blending (weights ∝ CV AUC score)
 
 ---
-
+`
 ## 📊 Results
 
 | Model | CV AUC |
@@ -110,7 +110,7 @@ Optional: Optuna hyperparameter tuning (`--tune` flag).
 | LightGBM (default) | ~0.7275 |
 | XGBoost | ~0.7263 |
 | CatBoost | ~0.7246 |
-| **Weighted Ensemble** | **~0.7725** |
+| **Weighted Ensemble** | **~0.72254** |
 
 **LightGBM actual comparison:**
 - CV AUC = `0.7275`
