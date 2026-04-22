@@ -1,6 +1,6 @@
 """
 =============================================================================
-MEMBER 2 — MODEL ENGINEER: model_training.py
+SAMUEL — MODEL ENGINEER: model_training.py
 =============================================================================
 Responsibilities:
   - Baseline  : Logistic Regression
